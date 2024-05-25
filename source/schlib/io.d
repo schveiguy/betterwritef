@@ -3,11 +3,9 @@ import core.interpolation;
 
 auto writef(Args...)(InterpolationHeader, Args args, InterpolationFooter)
 {
-    import std.meta;
     enum formatStr = () {
         string fmt = "";
         bool hasArg = false;
-        static void doNothing(const(char)[] data) {}
         static foreach(a; Args)
         {{
             static if(is(a == InterpolatedExpression!(S), string S))
@@ -50,7 +48,7 @@ auto writef(Args...)(InterpolationHeader, Args args, InterpolationFooter)
     }();
 
     static import std.stdio;
-    return std.stdio.writef!formatStr(mixin("AliasSeq!(", argsMixin, ")"));
+    return mixin("std.stdio.writef!formatStr(", argsMixin, ")");
 }
 
 unittest {
