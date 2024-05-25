@@ -20,19 +20,17 @@ auto writef(Args...)(InterpolationHeader, Args args, InterpolationFooter)
             }
             static if(is(a == InterpolatedLiteral!(S), string S))
             {
-                if(!hasArg || (hasArg && S.length > 1 && S[0] == '%' && S[1] != '%'))
+                if(S.length > 1 && S[0] == '%' && S[1] != '%')
                 {
                     // TODO, escape %
-                    fmt ~= S;
+                    hasArg = false;
                 }
-                else
+                else if(hasArg)
                 {
-                    // no specific formatting, use the default.
-                    if(hasArg)
-                        fmt ~= "%s";
-                    fmt ~= S;
+                    fmt ~= "%s";
+                    hasArg = false;
                 }
-                hasArg = false;
+                fmt ~= S;
             }
         }}
         if(hasArg)
@@ -59,6 +57,7 @@ unittest {
     int val = 12345;
     writef(i"here is some hex: $(val)%x\n");
     writef(i"here is some hex: $(12345)%x\n");
+    writef(i"$(val)\n");
 }
 
 unittest {
